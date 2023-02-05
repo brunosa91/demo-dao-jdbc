@@ -1,5 +1,6 @@
 package model.dao;
 
+import db.DB;
 import model.dao.impl.SellerDaoJDBC;
 
 public class DaoFactory {
@@ -11,7 +12,7 @@ public class DaoFactory {
 		/*instância da implementação, quando for instânciar na main, basta chamar SellerDao
 		e dar new Dao factory que irá chamar a interface que tem a implementação internamente*/
 		
-		return new SellerDaoJDBC();
+		return new SellerDaoJDBC(DB.getConnection());
 		
 	};
 
