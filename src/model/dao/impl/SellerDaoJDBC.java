@@ -116,8 +116,66 @@ public class SellerDaoJDBC implements SellerDao {
 
 	@Override
 	public List<Seller> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			
+			st =  conn.prepareStatement("SELECT seller.*,department.Name as DepName \r\n"
+					+ "FROM seller INNER JOIN department \r\n"
+					+ "ON seller.DepartmentId = department.Id\r\n"
+					+ "ORDER BY Name");
+			
+
+			rs = st.executeQuery();	
+			
+			List<Seller> list = new ArrayList<>();
+			
+			// no map vai ser guardado os departamentos para testar no while
+			// se o mesmo já existe para não trazer dois objetos repetidos
+			Map<Integer, Department> map = new HashMap<>();
+			/* quando a query é executada o result set aponta para posição zero
+			e nela não há objeto, então é necessário fazer uma lógica para que
+			o rs olhe para posição 1
+			*/
+			// nesse caso é usado o while porque o pode ter mais de um resultado
+			// aí tem que percorrer para pegar todos
+			while(rs.next()) {
+				
+				Department dep = map.get(rs.getInt("DepartmentId"));
+				
+				if(dep == null) {
+					dep = instantiateDepartment(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+				}
+				
+				
+				/* caso rs.next de true e fale que tem um objeto, vamos instanciar
+				A entidade Department pois além de vir o Seller tem que vir tbm
+				qual department ele está associado
+				*/
+				
+				/*Agora será instânciado Seller e apontando pro department
+				 * 
+				 * */
+				
+			    Seller obj = instantiateSeller(rs,dep);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		
+		finally {
+			// CONEXÃO MANTÉM ABERTA POIS PODE FAZER OUTRAS OPERAÇÕES
+			// FECHA CONEXÃO NO PRAGRAM
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		
+	
 	}
 
 	@Override
