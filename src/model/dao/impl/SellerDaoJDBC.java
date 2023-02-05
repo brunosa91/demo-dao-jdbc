@@ -67,21 +67,12 @@ public class SellerDaoJDBC implements SellerDao {
 				A entidade Department pois além de vir o Seller tem que vir tbm
 				qual department ele está associado
 				*/
-				Department dep =  new Department();
-				dep.setId(rs.getInt("DepartmentId"));
-				dep.setName(rs.getString("DepName"));
-				
+				Department dep =  instantiateDepartment(rs);
 				/*Agora será instânciado Seller e apontando pro department
 				 * 
 				 * */
 				
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBasesalary(rs.getDouble("BaseSalary"));
-				obj.setBirthdate(rs.getDate("BirthDate"));
-				obj.setDepartment(dep);
+			    Seller obj = instantiateSeller(rs,dep);
 				return obj;
 			}
 			return null;
@@ -96,6 +87,28 @@ public class SellerDaoJDBC implements SellerDao {
 			DB.closeResultSet(rs);
 		}
 
+	}
+
+	
+
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		//acima foi propaga a exceção que já foi tratada
+		
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId"));
+		dep.setName(rs.getString("DepName"));
+		return dep;
+		
+	}
+	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBasesalary(rs.getDouble("BaseSalary"));
+		obj.setBirthdate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep);
+		return obj;
 	}
 
 	@Override
